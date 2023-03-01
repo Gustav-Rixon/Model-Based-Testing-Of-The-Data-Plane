@@ -48,17 +48,6 @@
 					}
 				},
 				{
-					"id": "v34",
-					"name": "v_typeOfPort"
-				},
-				{
-					"id": "v32",
-					"name": "v_forward",
-					"properties": {
-						"color": "#f6d32d"
-					}
-				},
-				{
 					"id": "v36",
 					"name": "v_allowd"
 				},
@@ -78,11 +67,17 @@
 				},
 				{
 					"id": "v40",
-					"name": "v_taggedOrUntaggedPacket"
+					"name": "v_taggedOrUntaggedPacket",
+					"properties": {
+						"color": "#3584e4"
+					}
 				},
 				{
 					"id": "v42",
-					"name": "v_checkIfAllowd"
+					"name": "v_checkIfAllowd",
+					"properties": {
+						"color": "#3584e4"
+					}
 				},
 				{
 					"id": "v43",
@@ -107,7 +102,10 @@
 				},
 				{
 					"id": "v23",
-					"name": "v23"
+					"name": "v23",
+					"properties": {
+						"description": "Do the request with RPC and await awnser. Then compair what mininet got with models guess."
+					}
 				},
 				{
 					"id": "v0",
@@ -119,127 +117,175 @@
 				},
 				{
 					"id": "v6",
-					"name": "v_init_done"
+					"name": "v_addVlanTag"
 				},
 				{
 					"id": "v7",
 					"name": "v_init"
+				},
+				{
+					"id": "v2",
+					"name": "v_tagged_or_untagged"
+				},
+				{
+					"id": "v4",
+					"name": "v_vlanConf"
+				},
+				{
+					"id": "v3",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v5",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
 				}
 			],
 			"edges": [
 				{
 					"id": "e23",
-					"name": "e_taggedPacket",
+					"name": "e_taggedPKT",
 					"sourceVertexId": "v24",
-					"targetVertexId": "v26"
+					"targetVertexId": "v26",
+					"guard": "global.packet == \"tagged\";",
+					"actions": [],
+					"properties": {}
 				},
 				{
 					"id": "e24",
-					"name": "e_untaggedPacket",
+					"name": "e_untaggedPKT",
 					"sourceVertexId": "v24",
-					"targetVertexId": "v27"
+					"targetVertexId": "v27",
+					"guard": "global.packet == \"untagged\";",
+					"properties": {
+						"description": "addNativVlanTag"
+					}
 				},
 				{
 					"id": "e25",
-					"name": "e_taggedPacket",
+					"name": "e_taggedPKT",
 					"sourceVertexId": "v25",
-					"targetVertexId": "v28"
+					"targetVertexId": "v28",
+					"guard": "global.packet == \"tagged\";",
+					"actions": [
+						"(global.vlanTagTMP == global.portVlan) ? global.tagSameAsPort = \"yes\" : global.tagSameAsPort = \"no\";"
+					]
 				},
 				{
 					"id": "e26",
-					"name": "e_untaggedPacket",
+					"name": "e_untaggedPKT",
 					"sourceVertexId": "v25",
-					"targetVertexId": "v29"
+					"targetVertexId": "v3",
+					"guard": "global.packet == \"untagged\""
 				},
 				{
 					"id": "e27",
 					"name": "e_yes",
 					"sourceVertexId": "v28",
-					"targetVertexId": "v30"
+					"targetVertexId": "v30",
+					"guard": "global.tagSameAsPort == \"yes\""
 				},
 				{
 					"id": "e28",
 					"name": "e_no",
 					"sourceVertexId": "v28",
-					"targetVertexId": "v31"
+					"targetVertexId": "v31",
+					"guard": "global.tagSameAsPort == \"no\""
 				},
 				{
 					"id": "e22",
 					"name": "e_taggedPort",
-					"sourceVertexId": "v34",
-					"targetVertexId": "v24"
+					"sourceVertexId": "v4",
+					"targetVertexId": "v24",
+					"guard": "global.typeOfPort == \"tagged\""
 				},
 				{
 					"id": "e32",
 					"name": "e_untaggedPort",
-					"sourceVertexId": "v34",
-					"targetVertexId": "v25"
+					"sourceVertexId": "v4",
+					"targetVertexId": "v25",
+					"guard": "global.typeOfPort == \"untagged\""
 				},
 				{
 					"id": "e33",
 					"sourceVertexId": "v26",
 					"targetVertexId": "v36",
-					"name": "e_notSameAsNativeVlan"
+					"name": "e_notSameAsNativeVlan",
+					"guard": "global.sameAsNativeVlan == false"
 				},
 				{
 					"id": "e34",
 					"name": "e_yes",
 					"sourceVertexId": "v36",
-					"targetVertexId": "v32"
+					"targetVertexId": "v29",
+					"guard": "global.vlanTag == \"correct\""
 				},
 				{
 					"id": "e35",
 					"name": "e_no",
 					"sourceVertexId": "v36",
-					"targetVertexId": "v37"
+					"targetVertexId": "v37",
+					"guard": "global.vlanTag != \"correct\""
 				},
 				{
 					"id": "e29",
 					"name": "e_sameAsNativeVlan",
 					"sourceVertexId": "v26",
-					"targetVertexId": "v38"
+					"targetVertexId": "v38",
+					"guard": "global.sameAsNativeVlan == true"
 				},
 				{
 					"id": "e36",
-					"name": "e_broadcast",
+					"name": "e_broadcastPKT",
 					"sourceVertexId": "v24",
-					"targetVertexId": "v40"
+					"targetVertexId": "v40",
+					"guard": "global.packet == \"broadcast\""
 				},
 				{
 					"id": "e37",
-					"name": "e_broadcast",
+					"name": "e_broadcastPKT",
 					"sourceVertexId": "v25",
-					"targetVertexId": "v40"
+					"targetVertexId": "v40",
+					"guard": "global.packet == \"broadcast\""
 				},
 				{
 					"id": "e39",
-					"name": "e_tagged",
+					"name": "e_taggedPKT",
 					"sourceVertexId": "v40",
-					"targetVertexId": "v42"
+					"targetVertexId": "v42",
+					"guard": "global.broadcastPacket == \"tagged\";"
 				},
 				{
 					"id": "e40",
-					"name": "e_notTagged",
+					"name": "e_untaggedPKT",
 					"sourceVertexId": "v40",
-					"targetVertexId": "v43"
+					"targetVertexId": "v43",
+					"guard": "global.broadcastPacket == \"untagged\";"
 				},
 				{
 					"id": "e38",
 					"name": "e_yes",
 					"sourceVertexId": "v42",
-					"targetVertexId": "v41"
+					"targetVertexId": "v41",
+					"guard": "global.vlanTag == \"correct\";"
 				},
 				{
 					"id": "e41",
 					"name": "e_no",
 					"sourceVertexId": "v42",
-					"targetVertexId": "v44"
+					"targetVertexId": "v44",
+					"guard": "global.vlanTag == \"incorrect\";"
 				},
 				{
 					"id": "e21",
 					"name": "e_sameAsNativeVlan",
 					"sourceVertexId": "v27",
-					"targetVertexId": "v38"
+					"targetVertexId": "v5"
 				},
 				{
 					"id": "e30",
@@ -284,12 +330,6 @@
 					"targetVertexId": "v23"
 				},
 				{
-					"id": "e47",
-					"name": "e47",
-					"sourceVertexId": "v32",
-					"targetVertexId": "v23"
-				},
-				{
 					"id": "e48",
 					"name": "e48",
 					"sourceVertexId": "v38",
@@ -297,57 +337,166 @@
 				},
 				{
 					"id": "e0",
-					"name": "e_h1AsSource",
+					"name": "e_R_h1AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1"
+					"targetVertexId": "v1",
+					"actions": [
+						"global.src = \"h1\";",
+						"global.typeOfPort = \"untagged\";",
+						"global.portVlan = 10;",
+						"global.allowdVlans = [10];",
+						"global.nativVlanTagOnSwPort = 10;"
+					]
 				},
 				{
 					"id": "e8",
-					"name": "e_h2AsSource",
+					"name": "e_R_h2AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1"
+					"targetVertexId": "v1",
+					"actions": [
+						"global.src = \"h2\";",
+						"global.typeOfPort = \"tagged\";",
+						"global.portVlan = 20;",
+						"global.allowdVlans = [20];",
+						"global.nativVlanTagOnSwPort = 10;"
+					]
 				},
 				{
 					"id": "e9",
-					"name": "e_h3AsSource",
+					"name": "e_R_h3AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1"
+					"targetVertexId": "v1",
+					"actions": [
+						"global.src = \"h3\";",
+						"global.typeOfPort = \"untagged\";",
+						"global.portVlan = 30;",
+						"global.allowdVlans = [30];",
+						"global.nativVlanTagOnSwPort = 10;"
+					]
 				},
 				{
 					"id": "e10",
-					"name": "e_h4AsSource",
+					"name": "e_R_h4AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1"
+					"targetVertexId": "v1",
+					"actions": [
+						"global.src = \"h4\";",
+						"global.typeOfPort = \"tagged\";",
+						"global.portVlan = 40;",
+						"global.allowdVlans = [40];",
+						"global.nativVlanTagOnSwPort = 10;"
+					]
 				},
 				{
 					"id": "e11",
-					"name": "e_tagged",
+					"name": "e_R_tagged",
 					"sourceVertexId": "v1",
-					"targetVertexId": "v6"
+					"targetVertexId": "v6",
+					"actions": [
+						"global.packet = \"tagged\";"
+					]
 				},
 				{
 					"id": "e12",
-					"name": "e_untagged",
+					"name": "e_R_untagged",
 					"sourceVertexId": "v1",
-					"targetVertexId": "v6"
+					"targetVertexId": "v4",
+					"actions": [
+						"global.packet = \"untagged\";"
+					]
 				},
 				{
 					"id": "e13",
-					"name": "e_broadcast",
+					"name": "e_R_broadcast",
 					"sourceVertexId": "v1",
-					"targetVertexId": "v6"
+					"targetVertexId": "v2",
+					"actions": [
+						"global.packet = \"broadcast\";"
+					]
 				},
 				{
 					"id": "e15",
-					"name": "e_resetGuards",
+					"name": "e_init",
 					"sourceVertexId": "v7",
-					"targetVertexId": "v0"
+					"targetVertexId": "v0",
+					"actions": [
+						"global.packet = \"tagged\";"
+					]
+				},
+				{
+					"id": "e1",
+					"name": "e_R_tagged",
+					"sourceVertexId": "v2",
+					"targetVertexId": "v6",
+					"actions": [
+						"global.broadcastPacket = \"tagged\";"
+					]
+				},
+				{
+					"id": "e2",
+					"name": "e_R_untagged",
+					"sourceVertexId": "v2",
+					"targetVertexId": "v4",
+					"actions": [
+						"global.broadcastPacket = \"untagged\";"
+					]
+				},
+				{
+					"id": "e4",
+					"name": "e_R_incorrectVlanTag",
+					"sourceVertexId": "v6",
+					"targetVertexId": "v4",
+					"properties": {
+						"description": "This function should generate a number for the vlan excluding CORRECT vlans"
+					},
+					"actions": [
+						"global.vlanTag = \"incorrect\";",
+						"global.sameAsNativeVlan = false;",
+						"global.vlanTagTMP = \"\";"
+					]
+				},
+				{
+					"id": "e5",
+					"name": "e_R_correctVlanTag",
+					"sourceVertexId": "v6",
+					"targetVertexId": "v4",
+					"properties": {
+						"description": "This function will choose between \"correct\" vlan alternatives."
+					},
+					"actions": [
+						"global.vlanTag = \"correct\";",
+						"global.vlanTagTMP = global.portVlan;"
+					]
+				},
+				{
+					"id": "e3",
+					"name": "e_R_sameAsNativVlan",
+					"sourceVertexId": "v6",
+					"targetVertexId": "v4",
+					"actions": [
+						"global.sameAsNativeVlan = global.nativVlanTagOnSwPort;",
+						"global.sameAsNativeVlan = true;",
+						"global.vlanTag = \"correct\";",
+						"global.vlanTagTMP = \"\";"
+					]
+				},
+				{
+					"id": "e7",
+					"name": "e7",
+					"sourceVertexId": "v3",
+					"targetVertexId": "v23"
 				},
 				{
 					"id": "e14",
-					"name": "e_newPacket",
-					"sourceVertexId": "v6",
-					"targetVertexId": "v34"
+					"name": "e14",
+					"sourceVertexId": "v5",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e6",
+					"name": "e6",
+					"sourceVertexId": "v23",
+					"targetVertexId": "v7"
 				}
 			]
 		}
