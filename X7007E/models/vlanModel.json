@@ -1,0 +1,355 @@
+{
+	"name": "Default Models",
+	"models": [
+		{
+			"name": "RixonsVlanss",
+			"generator": "random(edge_coverage(100) && vertex_coverage(100))",
+			"startElementId": "v7",
+			"vertices": [
+				{
+					"id": "v24",
+					"name": "v_typeOfPacket"
+				},
+				{
+					"id": "v25",
+					"name": "v_typeOfPacket"
+				},
+				{
+					"id": "v26",
+					"name": "v_checkVlan"
+				},
+				{
+					"id": "v27",
+					"name": "v_addNativeVlanTag"
+				},
+				{
+					"id": "v28",
+					"name": "v_ifTagSameAsPort"
+				},
+				{
+					"id": "v29",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v30",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v31",
+					"name": "v_drop",
+					"properties": {
+						"color": "#e01b24"
+					}
+				},
+				{
+					"id": "v34",
+					"name": "v_typeOfPort"
+				},
+				{
+					"id": "v32",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v36",
+					"name": "v_allowd"
+				},
+				{
+					"id": "v37",
+					"name": "v_drop",
+					"properties": {
+						"color": "#e01b24"
+					}
+				},
+				{
+					"id": "v38",
+					"name": "v_forward",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v40",
+					"name": "v_taggedOrUntaggedPacket"
+				},
+				{
+					"id": "v42",
+					"name": "v_checkIfAllowd"
+				},
+				{
+					"id": "v43",
+					"name": "v_addVlanTagAndFlood",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v41",
+					"name": "v_floodToAllPortsOnVlan",
+					"properties": {
+						"color": "#f6d32d"
+					}
+				},
+				{
+					"id": "v44",
+					"name": "v_drop",
+					"properties": {
+						"color": "#e01b24"
+					}
+				},
+				{
+					"id": "v23",
+					"name": "v23"
+				},
+				{
+					"id": "v0",
+					"name": "v_choose_source_start"
+				},
+				{
+					"id": "v1",
+					"name": "v_pkt_type"
+				},
+				{
+					"id": "v6",
+					"name": "v_init_done"
+				},
+				{
+					"id": "v7",
+					"name": "v_init"
+				}
+			],
+			"edges": [
+				{
+					"id": "e23",
+					"name": "e_taggedPacket",
+					"sourceVertexId": "v24",
+					"targetVertexId": "v26"
+				},
+				{
+					"id": "e24",
+					"name": "e_untaggedPacket",
+					"sourceVertexId": "v24",
+					"targetVertexId": "v27"
+				},
+				{
+					"id": "e25",
+					"name": "e_taggedPacket",
+					"sourceVertexId": "v25",
+					"targetVertexId": "v28"
+				},
+				{
+					"id": "e26",
+					"name": "e_untaggedPacket",
+					"sourceVertexId": "v25",
+					"targetVertexId": "v29"
+				},
+				{
+					"id": "e27",
+					"name": "e_yes",
+					"sourceVertexId": "v28",
+					"targetVertexId": "v30"
+				},
+				{
+					"id": "e28",
+					"name": "e_no",
+					"sourceVertexId": "v28",
+					"targetVertexId": "v31"
+				},
+				{
+					"id": "e22",
+					"name": "e_taggedPort",
+					"sourceVertexId": "v34",
+					"targetVertexId": "v24"
+				},
+				{
+					"id": "e32",
+					"name": "e_untaggedPort",
+					"sourceVertexId": "v34",
+					"targetVertexId": "v25"
+				},
+				{
+					"id": "e33",
+					"sourceVertexId": "v26",
+					"targetVertexId": "v36",
+					"name": "e_notSameAsNativeVlan"
+				},
+				{
+					"id": "e34",
+					"name": "e_yes",
+					"sourceVertexId": "v36",
+					"targetVertexId": "v32"
+				},
+				{
+					"id": "e35",
+					"name": "e_no",
+					"sourceVertexId": "v36",
+					"targetVertexId": "v37"
+				},
+				{
+					"id": "e29",
+					"name": "e_sameAsNativeVlan",
+					"sourceVertexId": "v26",
+					"targetVertexId": "v38"
+				},
+				{
+					"id": "e36",
+					"name": "e_broadcast",
+					"sourceVertexId": "v24",
+					"targetVertexId": "v40"
+				},
+				{
+					"id": "e37",
+					"name": "e_broadcast",
+					"sourceVertexId": "v25",
+					"targetVertexId": "v40"
+				},
+				{
+					"id": "e39",
+					"name": "e_tagged",
+					"sourceVertexId": "v40",
+					"targetVertexId": "v42"
+				},
+				{
+					"id": "e40",
+					"name": "e_notTagged",
+					"sourceVertexId": "v40",
+					"targetVertexId": "v43"
+				},
+				{
+					"id": "e38",
+					"name": "e_yes",
+					"sourceVertexId": "v42",
+					"targetVertexId": "v41"
+				},
+				{
+					"id": "e41",
+					"name": "e_no",
+					"sourceVertexId": "v42",
+					"targetVertexId": "v44"
+				},
+				{
+					"id": "e21",
+					"name": "e_sameAsNativeVlan",
+					"sourceVertexId": "v27",
+					"targetVertexId": "v38"
+				},
+				{
+					"id": "e30",
+					"name": "e30",
+					"sourceVertexId": "v31",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e31",
+					"name": "e31",
+					"sourceVertexId": "v30",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e42",
+					"name": "e42",
+					"sourceVertexId": "v41",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e43",
+					"name": "e43",
+					"sourceVertexId": "v44",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e44",
+					"name": "e44",
+					"sourceVertexId": "v43",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e45",
+					"name": "e45",
+					"sourceVertexId": "v29",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e46",
+					"name": "e46",
+					"sourceVertexId": "v37",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e47",
+					"name": "e47",
+					"sourceVertexId": "v32",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e48",
+					"name": "e48",
+					"sourceVertexId": "v38",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e0",
+					"name": "e_h1AsSource",
+					"sourceVertexId": "v0",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e8",
+					"name": "e_h2AsSource",
+					"sourceVertexId": "v0",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e9",
+					"name": "e_h3AsSource",
+					"sourceVertexId": "v0",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e10",
+					"name": "e_h4AsSource",
+					"sourceVertexId": "v0",
+					"targetVertexId": "v1"
+				},
+				{
+					"id": "e11",
+					"name": "e_tagged",
+					"sourceVertexId": "v1",
+					"targetVertexId": "v6"
+				},
+				{
+					"id": "e12",
+					"name": "e_untagged",
+					"sourceVertexId": "v1",
+					"targetVertexId": "v6"
+				},
+				{
+					"id": "e13",
+					"name": "e_broadcast",
+					"sourceVertexId": "v1",
+					"targetVertexId": "v6"
+				},
+				{
+					"id": "e15",
+					"name": "e_resetGuards",
+					"sourceVertexId": "v7",
+					"targetVertexId": "v0"
+				},
+				{
+					"id": "e14",
+					"name": "e_newPacket",
+					"sourceVertexId": "v6",
+					"targetVertexId": "v34"
+				}
+			]
+		}
+	]
+}

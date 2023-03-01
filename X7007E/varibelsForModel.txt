@@ -1,0 +1,22 @@
+global.src                  - Keeps track of who is the source
+global.typeOfPort           - untagged or tagged 
+global.portVlan             - What is the configured vlan on the switch that the host is conected to
+global.allowdVlans          - Array containing allowdVlans
+global.packet               - Descripes what type of packet; tagged; untagged; broadcast
+global.tagSameAsPort        - 
+global.nativVlanTagOnSwPort - 
+global.vlanTag              - vlan tag on the pkt
+
+
+
+
+
+
+
+
+
+
+
+
+
+sudo altwalker online tests -m models/vlanModel.json "random(time_duration(10))"
