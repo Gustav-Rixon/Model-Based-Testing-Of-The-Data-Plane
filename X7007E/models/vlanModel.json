@@ -144,6 +144,10 @@
 					"properties": {
 						"color": "#f6d32d"
 					}
+				},
+				{
+					"id": "v8",
+					"name": "v_choose_dst"
 				}
 			],
 			"edges": [
@@ -339,7 +343,7 @@
 					"id": "e0",
 					"name": "e_R_h1AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1",
+					"targetVertexId": "v8",
 					"actions": [
 						"global.src = \"h1\";",
 						"global.typeOfPort = \"untagged\";",
@@ -352,7 +356,7 @@
 					"id": "e8",
 					"name": "e_R_h2AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1",
+					"targetVertexId": "v8",
 					"actions": [
 						"global.src = \"h2\";",
 						"global.typeOfPort = \"tagged\";",
@@ -365,7 +369,7 @@
 					"id": "e9",
 					"name": "e_R_h3AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1",
+					"targetVertexId": "v8",
 					"actions": [
 						"global.src = \"h3\";",
 						"global.typeOfPort = \"untagged\";",
@@ -378,7 +382,7 @@
 					"id": "e10",
 					"name": "e_R_h4AsSource",
 					"sourceVertexId": "v0",
-					"targetVertexId": "v1",
+					"targetVertexId": "v8",
 					"actions": [
 						"global.src = \"h4\";",
 						"global.typeOfPort = \"tagged\";",
@@ -425,7 +429,7 @@
 				},
 				{
 					"id": "e1",
-					"name": "e_R_tagged",
+					"name": "e_R_br_tagged",
 					"sourceVertexId": "v2",
 					"targetVertexId": "v6",
 					"actions": [
@@ -434,7 +438,7 @@
 				},
 				{
 					"id": "e2",
-					"name": "e_R_untagged",
+					"name": "e_R_br_untagged",
 					"sourceVertexId": "v2",
 					"targetVertexId": "v4",
 					"actions": [
@@ -494,7 +498,35 @@
 				},
 				{
 					"id": "e6",
-					"name": "e6",
+					"name": "e_R_h1AsDst",
+					"sourceVertexId": "v8",
+					"targetVertexId": "v1",
+					"guard": "global.src != \"h1\";"
+				},
+				{
+					"id": "e16",
+					"name": "e_R_h2AsDst",
+					"sourceVertexId": "v8",
+					"targetVertexId": "v1",
+					"guard": "global.src != \"h2\";"
+				},
+				{
+					"id": "e17",
+					"name": "e_R_h3AsDst",
+					"sourceVertexId": "v8",
+					"targetVertexId": "v1",
+					"guard": "global.src != \"h3\";"
+				},
+				{
+					"id": "e18",
+					"name": "e_R_h4AsDst",
+					"sourceVertexId": "v8",
+					"targetVertexId": "v1",
+					"guard": "global.src != \"h4\";"
+				},
+				{
+					"id": "e19",
+					"name": "e19",
 					"sourceVertexId": "v23",
 					"targetVertexId": "v7"
 				}
