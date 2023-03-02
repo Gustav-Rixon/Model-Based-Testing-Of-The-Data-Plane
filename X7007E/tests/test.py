@@ -1,5 +1,6 @@
 
 import unittest
+import json
 from scapy.all import *
 
 # This paket will fail because the host is bad
@@ -7,29 +8,48 @@ packet = IP(dst="10.0.2.20")/TCP()
 
 
 class RixonsVlanss(unittest.TestCase):
-
-    ass = ""
+    # Implemented
     src = ""
+    dst = ""
+    pktType = ""
+    vlanTag = ""
+    typeOfPort = ""
+    nativVlanTagOnSwPort = ""
+
+    # Not Implemented
 
     # Here is where a assert should check if expected outcome equels the simulated outcome
+
     def v23(self):
+        global src
         # This will indecate for the model what the expected outcome is
 
         # Build packet (automatically done when sending)
         #    ans, unans = sr(IP(raw(packet)), timeout=2)
      #   self.assertEquals(ass, ans.show().__str__(), msg="ajajja")
-        pass
+        print("----------SRC-------------")
+        print(src)
+        print("--------------------------")
 
     def v_drop(self):
         global ass
-        ass = "None"  # If the paket is dropt assume no response
+        ass = "fail"  # If the paket is dropt assume no response
 
+    # TODO
+    # This need to check more!
+    # Ex: expect multiple responses!
     def v_floodToAllPortsOnVlan(self):
-        pass
+        global ass
+        ass = "succ"
+
+    def v_addVlanTagAndFlood(self):
+        global ass, vlanTag, nativVlanTagOnSwPort
+        vlanTag = nativVlanTagOnSwPort
+        ass = "succ"
 
     def v_forward(self):
         global ass
-        ass = "None"
+        ass = "succ"
 
     def v_newPacket(self):
         global ass
@@ -39,26 +59,18 @@ class RixonsVlanss(unittest.TestCase):
     # NEEDS What host is sending
     # Cheks its own ip?
     def v_typeOfPort(self):
-        # f = open('switchBehavior.json')
-        # data = json.load(f)
-
-        # try:
-        #    tmp = data["h1"]["conPort"]
-        #    print(tmp)
-        # except KeyError:
-        #    print("ID doesn't exist")
         pass
 
         # Activate Guard
+
+    def v_choose_dst(self):
+        pass
 
     # ACTIONS
 
     def e_R_correctVlanTag(self):
         pass
 
-    def e_R_h2AsSource(self):
-        pass
-
     def e16(self):
         pass
 
@@ -69,105 +81,85 @@ class RixonsVlanss(unittest.TestCase):
         pass
 
     def e_R_h4AsSource(self):
-        pass
+        global src, typeOfPort, nativVlanTagOnSwPort
+        nativVlanTagOnSwPort = 40
+        typeOfPort = "tagged"
+        src = GetHost("h4")
 
     def e_R_h3AsSource(self):
-        pass
+        global src, typeOfPort, nativVlanTagOnSwPort
+        nativVlanTagOnSwPort = 30
+        typeOfPort = "untagged"
+        src = GetHost("h3")
+
+    def e_R_h2AsSource(self):
+        global src, typeOfPort, nativVlanTagOnSwPort
+        nativVlanTagOnSwPort = 20
+        typeOfPort = "tagged"
+        src = GetHost("h2")
 
     def e_R_h1AsSource(self):
-        pass
+        global src, typeOfPort, nativVlanTagOnSwPort
+        nativVlanTagOnSwPort = 10
+        typeOfPort = "untagged"
+        src = GetHost("h1")
+
+    def e_R_h4AsDst(self):
+        global dst
+        dst = "h4"
+
+    def e_R_h3AsDst(self):
+        global dst
+        dst = "h3"
+
+    def e_R_h2AsDst(self):
+        global dst
+        dst = "h2"
+
+    def e_R_h1AsDst(self):
+        global dst
+        dst = "h1"
 
     def e_R_tagged(self):
-        pass
-
-    def e_R_broadcast(self):
-        pass
+        global pktType
+        pktType = "tagged"
 
     def e_R_untagged(self):
-        pass
+        global pktType
+        pktType = "untagged"
+
+    def e_R_broadcast(self):
+        global pktType
+        pktType = "broadcast"
+
+    def e_R_br_tagged(self):
+        global pktType
+        pktType = "broadcast_tagged"
+
+    def e_R_br_untagged(self):
+        global pktType
+        pktType = "broadcast_untagged"
 
     def e_R_noVlanTag(self):
-        pass
+        global vlanTag
+        vlanTag = ""
 
     def e_R_incorrectVlanTag(self):
-        pass
-
-    def e_R_tagged(self):
-        pass
+        global vlanTag
+        vlanTag = "incorrect"
 
     def e_R_sameAsNativVlan(self):
-        pass
-
-    def e_R_h2AsSource(self):
-        pass
-
-    def e_R_incorrectVlanTag(self):
-        pass
-
-    def e_R_untagged(self):
-        pass
-
-    def e_R_h1AsSource(self):
-        pass
-
-    def e16(self):
-        pass
-
-    def e_R_h4AsSource(self):
-        pass
-
-    def e_R_noVlanTag(self):
-        pass
+        global vlanTag
+        vlanTag = "sameAsNativVlan"
 
     def e_R_correctVlanTag(self):
+        global vlanTag
+        vlanTag = "correct"
+
+    def e16(self):
         pass
 
     def e14(self):
-        pass
-
-    def e_R_h3AsSource(self):
-        pass
-
-    def e_R_broadcast(self):
-        pass
-
-    def e_R_sameAsNativVlan(self):
-        pass
-
-    def e14(self):
-        pass
-
-    def e_R_h1AsSource(self):
-        pass
-
-    def e_R_h3AsSource(self):
-        pass
-
-    def e_R_tagged(self):
-        pass
-
-    def e16(self):
-        pass
-
-    def e_R_incorrectVlanTag(self):
-        pass
-
-    def e_R_correctVlanTag(self):
-        pass
-
-    def e_R_h4AsSource(self):
-        pass
-
-    def e_R_untagged(self):
-        pass
-
-    def e_R_broadcast(self):
-        pass
-
-    def e_R_h2AsSource(self):
-        pass
-
-    def e16(self):
         pass
 
     def e7(self):
@@ -208,9 +200,6 @@ class RixonsVlanss(unittest.TestCase):
 
     def v_init(self):
         print("-----NEWTEST-----")
-
-    def v_addVlanTagAndFlood(self):
-        pass
 
     def e42(self):
         pass
@@ -271,3 +260,30 @@ class RixonsVlanss(unittest.TestCase):
 
     def e_taggedPKT(self):
         pass
+
+    def e19(self):
+        pass
+
+# ----helper functions-----#
+
+
+def GetHost(hostname):
+    f = open('networkInfo.json')
+    data = json.load(f)
+
+    try:
+        host = data[hostname]["ip"]
+        return host
+    except KeyError:
+        print("Host doesn't exist")
+    pass
+
+
+def CreatePkt():
+    pass
+
+# TODO send the pkt lamo
+
+
+def SendPkt():
+    pass
