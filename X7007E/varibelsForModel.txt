@@ -20,3 +20,5 @@ global.vlanTag              - vlan tag on the pkt
 
 
 sudo altwalker online tests -m models/vlanModel.json "random(time_duration(10))"
+sudo altwalker online tests -m models/vlanModel.json "random(edge_coverage(100))"
+sudo altwalker online tests -m models/vlanModel.json "random(reached_vertex(v23))"

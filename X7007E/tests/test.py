@@ -3,57 +3,115 @@ import unittest
 import json
 from scapy.all import *
 
-# This paket will fail because the host is bad
-packet = IP(dst="10.0.2.20")/TCP()
+import Pyro5.api
 
+import pynng
+import logging
+
+logger = logging.getLogger('my_logger')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('my_log_file.log')
+
+formatter = logging.Formatter('%(asctime)s %(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
+# logger = logging.basicConfig(filename='test.log', level=logging.INFO,
+#                             format='%(asctime)s %(levelname)s:%(message)s')
 
 class RixonsVlanss(unittest.TestCase):
     # Implemented
-    src = ""
-    dst = ""
+    srcT = ""
+    dstT = ""
     pktType = ""
     vlanTag = ""
     typeOfPort = ""
     nativVlanTagOnSwPort = ""
+    expectedOutCome = False
 
     # Not Implemented
 
     # Here is where a assert should check if expected outcome equels the simulated outcome
 
-    def v23(self):
-        global src
-        # This will indecate for the model what the expected outcome is
+    # This function should send the packet and assert it to the expected outcome
 
-        # Build packet (automatically done when sending)
-        #    ans, unans = sr(IP(raw(packet)), timeout=2)
-     #   self.assertEquals(ass, ans.show().__str__(), msg="ajajja")
-        print("----------SRC-------------")
-        print(src)
-        print("--------------------------")
+    def v23(self):
+        # global src, dstT, expectedOutCome, pktType, vlanTag
+        global src, dstT, expectedOutCome, pktType
+
+        dstIPA = GetInfo(dstT, "ip")
+        srcIPA = GetInfo(src, "ip")
+
+        dstMACA = GetInfo(dstT, "mac")
+        srcMACA = GetInfo(src, "mac")
+
+        # dstIPA = "10.0.0.10"
+        # srcIPA = "10.0.1.10"
+        # dstMACA = "00:00:00:00:00:00:01"
+        # srcMACA = "00:00:00:00:00:00:02"
+
+        data = {
+            "dstIP": dstIPA,
+            "dstMAC": dstMACA,
+            "srcMAC": srcMACA
+        }
+
+        data = json.dumps(data)
+
+        t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 1))
+        # tt = threading.Thread(target=Sub, args=(dstIPA, 5))
+        tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
+        # t.start()
+        # tt.start()
+        # time.sleep(1)  # RACE CONDITION ahhhhhhhhhhhhhhhhhhhhhh
+        # s = Test()  # send multiple pkt to ensure delivery
+        # time.sleep(2)  # sleep as to not overload the tinyRPC server ;)
+        # SendPkt(srcIPA, data)
+        # SendPkt(srcIPA, data)
+        # SendPkt(srcIPA, data)
+        # SendPkt(srcIPA, data)
+        aw = Sub(dstIPA, 0)
+        # tt.join()
+        # t.join()
+        # aw = ""
+        logger.info("---SIMDATA---")
+        logger.info("dst address %s", dstIPA)
+        logger.info("src address %s", srcIPA)
+        logger.info("dst mac %s", dstMACA)
+        logger.info("src mac %s", srcMACA)
+        logger.info("pktType %s", pktType)
+
+        try:
+            self.assertEqual(expectedOutCome, aw)
+        except AssertionError as e:
+            logger.error(f"Assertion FAILED: {e}")
+        else:
+            logger.info(
+                "Assertion PASSED: arg1 = %s, arg2 = %s", aw, "arg2")
 
     def v_drop(self):
-        global ass
-        ass = "fail"  # If the paket is dropt assume no response
+        global expectedOutCome
+        expectedOutCome = False  # If the paket is dropt assume no response
 
     # TODO
     # This need to check more!
     # Ex: expect multiple responses!
     def v_floodToAllPortsOnVlan(self):
-        global ass
-        ass = "succ"
+        global expectedOutCome
+        expectedOutCome = True
 
     def v_addVlanTagAndFlood(self):
-        global ass, vlanTag, nativVlanTagOnSwPort
+        global expectedOutCome, vlanTag, nativVlanTagOnSwPort
         vlanTag = nativVlanTagOnSwPort
-        ass = "succ"
+        expectedOutCome = True
 
     def v_forward(self):
-        global ass
-        ass = "succ"
+        global expectedOutCome
+        expectedOutCome = True
 
     def v_newPacket(self):
-        global ass
-        ass = ""  # No ass
+        pass
 
     # TODO
     # NEEDS What host is sending
@@ -84,41 +142,41 @@ class RixonsVlanss(unittest.TestCase):
         global src, typeOfPort, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 40
         typeOfPort = "tagged"
-        src = GetHost("h4")
+        src = "h4"
 
     def e_R_h3AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 30
         typeOfPort = "untagged"
-        src = GetHost("h3")
+        src = "h3"
 
     def e_R_h2AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 20
         typeOfPort = "tagged"
-        src = GetHost("h2")
+        src = "h2"
 
     def e_R_h1AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 10
         typeOfPort = "untagged"
-        src = GetHost("h1")
+        src = "h1"
 
     def e_R_h4AsDst(self):
-        global dst
-        dst = "h4"
+        global dstT
+        dstT = "h4"
 
     def e_R_h3AsDst(self):
-        global dst
-        dst = "h3"
+        global dstT
+        dstT = "h3"
 
     def e_R_h2AsDst(self):
-        global dst
-        dst = "h2"
+        global dstT
+        dstT = "h2"
 
     def e_R_h1AsDst(self):
-        global dst
-        dst = "h1"
+        global dstT
+        dstT = "h1"
 
     def e_R_tagged(self):
         global pktType
@@ -267,15 +325,70 @@ class RixonsVlanss(unittest.TestCase):
 # ----helper functions-----#
 
 
-def GetHost(hostname):
+def GetInfo(hostname, info):
     f = open('networkInfo.json')
     data = json.load(f)
-
     try:
-        host = data[hostname]["ip"]
+        host = data[hostname][info]
+        f.close()
         return host
     except KeyError:
-        print("Host doesn't exist")
+        print(hostname + " Host doesn't exist")
+        f.close()
+    pass
+
+
+# def StartPub(hostIP, pattern, timeout):
+#     rpc_client = RPCClient(
+#         JSONRPCProtocol(),
+#         HttpPostClientTransport('http://%s' % hostIP)
+#     )
+
+#     str_server = rpc_client.get_proxy()
+
+#     str_server.pub(pattern, timeout)
+
+def StartPub(hostIP, pattern, timeout):
+    greeting_maker = Pyro5.api.Proxy(
+        "PYRONAME:example.greeting@%s:9090" % hostIP)
+    greeting_maker.pub(pattern, timeout)
+
+
+def Test():
+    greeting_maker = Pyro5.api.Proxy(
+        "PYRONAME:example.greeting@10.0.0.10:9090")
+    res = greeting_maker.get_fortune()
+    return res
+
+
+def SendPkt(hostIP, data):
+    greeting_maker = Pyro5.api.Proxy(
+        "PYRONAME:example.greeting@%s:9090" % hostIP)
+    greeting_maker.sendPkt(data)
+
+
+def Sub(target, max_timeouts):
+    address = f'tcp://{target}:65432'
+    timeouts = 0
+
+    try:
+        with pynng.Sub0(dial=address, recv_timeout=1) as socket:
+            socket.subscribe(b'')
+
+            while timeouts <= max_timeouts:
+                try:
+                    if socket.recv().decode() == 'True':
+                        return True
+                except pynng.Timeout:
+                    timeouts += 1
+    except pynng.exceptions.NNGException as e:  # This is a problem
+        print(f"Connection error: {e}")
+        return (f"Connection error: {e}")
+
+    return False
+
+
+def GetVlan(type):
     pass
 
 
@@ -283,7 +396,3 @@ def CreatePkt():
     pass
 
 # TODO send the pkt lamo
-
-
-def SendPkt():
-    pass

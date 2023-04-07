@@ -422,10 +422,7 @@
 					"id": "e15",
 					"name": "e_init",
 					"sourceVertexId": "v7",
-					"targetVertexId": "v0",
-					"actions": [
-						"global.packet = \"tagged\";"
-					]
+					"targetVertexId": "v0"
 				},
 				{
 					"id": "e1",
@@ -469,7 +466,8 @@
 					},
 					"actions": [
 						"global.vlanTag = \"correct\";",
-						"global.vlanTagTMP = global.portVlan;"
+						"global.vlanTagTMP = global.portVlan;",
+						"global.sameAsNativeVlan = false;"
 					]
 				},
 				{
