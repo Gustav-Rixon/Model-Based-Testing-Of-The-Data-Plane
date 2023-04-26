@@ -52,10 +52,10 @@ def main():
                     ip="10.0.%d.10/24" % h,
                     mac='00:00:00:00:00:%02x' % (h+1))
 
-    net.addLink("h1", s1)
-    net.addLink("h2", s2)
-    net.addLink("h3", s3)
-    net.addLink("h4", s4)
+    net.addLink("h1", s1, port2=1)
+    net.addLink("h2", s2, port2=2)
+    net.addLink("h3", s3, port2=3)
+    net.addLink("h4", s4, port2=4)
 
     net.addLink(s0, s1)
     net.addLink(s0, s2)
