@@ -172,7 +172,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "basic_l2_vlan.p4",
-        "line" : 172,
+        "line" : 200,
         "column" : 8,
         "source_fragment" : "DeparserImpl"
       },
@@ -225,7 +225,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 77,
+            "line" : 79,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = port"
           }
@@ -251,7 +251,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 81,
+            "line" : 83,
             "column" : 8,
             "source_fragment" : "standard_metadata.mcast_grp = 1"
           }
@@ -277,7 +277,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 85,
+            "line" : 87,
             "column" : 50,
             "source_fragment" : "hdr.ethernet.srcAddr"
           }
@@ -296,7 +296,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 85,
+            "line" : 87,
             "column" : 72,
             "source_fragment" : "standard_metadata.ingress_port"
           }
@@ -315,7 +315,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 85,
+            "line" : 87,
             "column" : 8,
             "source_fragment" : "digest<mac_learn_digest>((bit<32>)1024, { hdr.ethernet.srcAddr, standard_metadata.ingress_port })"
           }
@@ -337,7 +337,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 89,
+            "line" : 91,
             "column" : 8,
             "source_fragment" : "mark_to_drop( standard_metadata )"
           }
@@ -347,7 +347,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 90,
+            "line" : 92,
             "column" : 8,
             "source_fragment" : "exit"
           }
@@ -369,7 +369,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 89,
+            "line" : 91,
             "column" : 8,
             "source_fragment" : "mark_to_drop( standard_metadata )"
           }
@@ -379,7 +379,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 90,
+            "line" : 92,
             "column" : 8,
             "source_fragment" : "exit"
           }
@@ -401,7 +401,7 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 89,
+            "line" : 91,
             "column" : 8,
             "source_fragment" : "mark_to_drop( standard_metadata )"
           }
@@ -411,7 +411,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 90,
+            "line" : 92,
             "column" : 8,
             "source_fragment" : "exit"
           }
@@ -425,25 +425,108 @@
       "primitives" : []
     },
     {
-      "name" : "basic_l2_vlan130",
+      "name" : "ingress._nop",
       "id" : 7,
       "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "ingress.allowd",
+      "id" : 8,
+      "runtime_data" : [],
+      "primitives" : []
+    },
+    {
+      "name" : "ingress.tagPkt",
+      "id" : 9,
+      "runtime_data" : [
+        {
+          "name" : "native_vlan_id",
+          "bitwidth" : 12
+        }
+      ],
       "primitives" : [
         {
-          "op" : "exit",
-          "parameters" : [],
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "ether_type"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x8100"
+            }
+          ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 130,
-            "column" : 20,
-            "source_fragment" : "exit"
+            "line" : 102,
+            "column" : 8,
+            "source_fragment" : "hdr.vlan.ether_type = 0x8100"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "vid"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic_l2_vlan.p4",
+            "line" : 103,
+            "column" : 8,
+            "source_fragment" : "hdr.vlan.vid = native_vlan_id"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "cfi"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic_l2_vlan.p4",
+            "line" : 104,
+            "column" : 8,
+            "source_fragment" : "hdr.vlan.cfi = 0"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["vlan", "pcp"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x01"
+            }
+          ],
+          "source_info" : {
+            "filename" : "basic_l2_vlan.p4",
+            "line" : 105,
+            "column" : 8,
+            "source_fragment" : "hdr.vlan.pcp = 001"
           }
         }
       ]
     },
     {
-      "name" : "basic_l2_vlan134",
-      "id" : 8,
+      "name" : "basic_l2_vlan181",
+      "id" : 10,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -456,35 +539,9 @@
           ],
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 134,
-            "column" : 20,
+            "line" : 181,
+            "column" : 12,
             "source_fragment" : "hdr.vlan.setInvalid()"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "basic_l2_vlan141",
-      "id" : 9,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["vlan", "vid"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x000a"
-            }
-          ],
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 141,
-            "column" : 16,
-            "source_fragment" : "hdr.vlan.vid = 10"
           }
         }
       ]
@@ -496,134 +553,104 @@
       "id" : 0,
       "source_info" : {
         "filename" : "basic_l2_vlan.p4",
-        "line" : 75,
+        "line" : 77,
         "column" : 8,
         "source_fragment" : "ingress"
       },
       "init_table" : "node_2",
       "tables" : [
         {
-          "name" : "tbl_drop",
+          "name" : "ingress.allowdVlan",
           "id" : 0,
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 129,
-            "column" : 20,
-            "source_fragment" : "drop()"
+            "line" : 108,
+            "column" : 10,
+            "source_fragment" : "allowdVlan"
           },
-          "key" : [],
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "standard_metadata.ingress_port",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.vlan.vid",
+              "target" : ["vlan", "vid"],
+              "mask" : null
+            }
+          ],
           "match_type" : "exact",
           "type" : "simple",
           "max_size" : 1024,
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [5],
-          "actions" : ["ingress.drop"],
-          "base_default_next" : "tbl_basic_l2_vlan130",
+          "action_ids" : [8, 3],
+          "actions" : ["ingress.allowd", "ingress.drop"],
+          "base_default_next" : "ingress.smac",
           "next_tables" : {
-            "ingress.drop" : "tbl_basic_l2_vlan130"
+            "ingress.allowd" : "ingress.smac",
+            "ingress.drop" : "ingress.smac"
           },
           "default_entry" : {
-            "action_id" : 5,
-            "action_const" : true,
+            "action_id" : 3,
+            "action_const" : false,
             "action_data" : [],
-            "action_entry_const" : true
+            "action_entry_const" : false
           }
         },
         {
-          "name" : "tbl_basic_l2_vlan130",
+          "name" : "ingress.applyNativeVlan",
           "id" : 1,
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 130,
-            "column" : 20,
-            "source_fragment" : "exit"
+            "line" : 122,
+            "column" : 10,
+            "source_fragment" : "applyNativeVlan"
           },
-          "key" : [],
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "standard_metadata.ingress_port",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            },
+            {
+              "match_type" : "exact",
+              "name" : "hdr.vlan.vid",
+              "target" : ["vlan", "vid"],
+              "mask" : null
+            }
+          ],
           "match_type" : "exact",
           "type" : "simple",
           "max_size" : 1024,
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [7],
-          "actions" : ["basic_l2_vlan130"],
+          "action_ids" : [9, 6],
+          "actions" : ["ingress.tagPkt", "ingress._nop"],
           "base_default_next" : "ingress.smac",
           "next_tables" : {
-            "basic_l2_vlan130" : "ingress.smac"
+            "ingress.tagPkt" : "ingress.smac",
+            "ingress._nop" : "ingress.smac"
           },
           "default_entry" : {
-            "action_id" : 7,
-            "action_const" : true,
+            "action_id" : 6,
+            "action_const" : false,
             "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_basic_l2_vlan134",
-          "id" : 2,
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 134,
-            "column" : 20,
-            "source_fragment" : "hdr.vlan.setInvalid()"
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [8],
-          "actions" : ["basic_l2_vlan134"],
-          "base_default_next" : "ingress.smac",
-          "next_tables" : {
-            "basic_l2_vlan134" : "ingress.smac"
-          },
-          "default_entry" : {
-            "action_id" : 8,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_basic_l2_vlan141",
-          "id" : 3,
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 141,
-            "column" : 29,
-            "source_fragment" : "="
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [9],
-          "actions" : ["basic_l2_vlan141"],
-          "base_default_next" : "ingress.smac",
-          "next_tables" : {
-            "basic_l2_vlan141" : "ingress.smac"
-          },
-          "default_entry" : {
-            "action_id" : 9,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
+            "action_entry_const" : false
           }
         },
         {
           "name" : "ingress.smac",
-          "id" : 4,
+          "id" : 2,
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 109,
+            "line" : 149,
             "column" : 10,
             "source_fragment" : "smac"
           },
@@ -641,7 +668,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [2, 6, 4],
+          "action_ids" : [2, 7, 5],
           "actions" : ["ingress.mac_learn", "ingress._nop", "ingress.drop"],
           "base_default_next" : "ingress.dmac",
           "next_tables" : {
@@ -658,10 +685,10 @@
         },
         {
           "name" : "ingress.dmac",
-          "id" : 5,
+          "id" : 3,
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 96,
+            "line" : 136,
             "column" : 10,
             "source_fragment" : "dmac"
           },
@@ -679,7 +706,7 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [0, 1, 3],
+          "action_ids" : [0, 1, 4],
           "actions" : ["ingress.forward", "ingress.bcast", "ingress.drop"],
           "base_default_next" : null,
           "next_tables" : {
@@ -702,7 +729,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "basic_l2_vlan.p4",
-            "line" : 125,
+            "line" : 163,
             "column" : 12,
             "source_fragment" : "hdr.vlan.isValid()"
           },
@@ -717,126 +744,8 @@
               }
             }
           },
-          "true_next" : "node_3",
-          "false_next" : "node_8"
-        },
-        {
-          "name" : "node_3",
-          "id" : 1,
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 126,
-            "column" : 16,
-            "source_fragment" : "standard_metadata.ingress_port == 1 || standard_metadata.ingress_port == 2"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "or",
-              "left" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "==",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["standard_metadata", "ingress_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0x0001"
-                  }
-                }
-              },
-              "right" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "==",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["standard_metadata", "ingress_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0x0002"
-                  }
-                }
-              }
-            }
-          },
-          "true_next" : "node_4",
-          "false_next" : "ingress.smac"
-        },
-        {
-          "name" : "node_4",
-          "id" : 2,
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 128,
-            "column" : 20,
-            "source_fragment" : "hdr.vlan.vid != 10"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "!=",
-              "left" : {
-                "type" : "field",
-                "value" : ["vlan", "vid"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x000a"
-              }
-            }
-          },
-          "true_next" : "tbl_drop",
-          "false_next" : "tbl_basic_l2_vlan134"
-        },
-        {
-          "name" : "node_8",
-          "id" : 3,
-          "source_info" : {
-            "filename" : "basic_l2_vlan.p4",
-            "line" : 140,
-            "column" : 16,
-            "source_fragment" : "standard_metadata.ingress_port == 1 || standard_metadata.ingress_port == 2"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "or",
-              "left" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "==",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["standard_metadata", "ingress_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0x0001"
-                  }
-                }
-              },
-              "right" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "==",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["standard_metadata", "ingress_port"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0x0002"
-                  }
-                }
-              }
-            }
-          },
-          "true_next" : "tbl_basic_l2_vlan141",
-          "false_next" : "ingress.smac"
+          "true_next" : "ingress.allowdVlan",
+          "false_next" : "ingress.applyNativeVlan"
         }
       ]
     },
@@ -845,14 +754,68 @@
       "id" : 1,
       "source_info" : {
         "filename" : "basic_l2_vlan.p4",
-        "line" : 153,
+        "line" : 178,
         "column" : 8,
         "source_fragment" : "egress"
       },
-      "init_table" : null,
-      "tables" : [],
+      "init_table" : "node_9",
+      "tables" : [
+        {
+          "name" : "tbl_basic_l2_vlan181",
+          "id" : 4,
+          "source_info" : {
+            "filename" : "basic_l2_vlan.p4",
+            "line" : 181,
+            "column" : 12,
+            "source_fragment" : "hdr.vlan.setInvalid()"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [10],
+          "actions" : ["basic_l2_vlan181"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "basic_l2_vlan181" : null
+          },
+          "default_entry" : {
+            "action_id" : 10,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        }
+      ],
       "action_profiles" : [],
-      "conditionals" : []
+      "conditionals" : [
+        {
+          "name" : "node_9",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "basic_l2_vlan.p4",
+            "line" : 180,
+            "column" : 12,
+            "source_fragment" : "hdr.vlan.isValid()"
+          },
+          "expression" : {
+            "type" : "expression",
+            "value" : {
+              "op" : "d2b",
+              "left" : null,
+              "right" : {
+                "type" : "field",
+                "value" : ["vlan", "$valid$"]
+              }
+            }
+          },
+          "false_next" : null,
+          "true_next" : "tbl_basic_l2_vlan181"
+        }
+      ]
     }
   ],
   "checksums" : [],
