@@ -26,7 +26,9 @@ struct headers {
     vlan_t vlan;
 }
 
-struct metadata {}
+struct metadata {
+
+}
 
 /*************************************************************************
 *********************** P A R S E R ***********************************
@@ -93,6 +95,23 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     action _nop() {
     }
 
+    action allowd() {
+    }
+
+    table allowdVlan { // Contains what vlan tag is allowd on what port 
+        key = {
+            standard_metadata.ingress_port: exact;
+            //AND
+            hdr.vlan.vid: exact;
+        }
+        actions = {
+            allowd;
+            drop;
+        }
+        default_action = drop();
+        size = 1024;
+    }
+
     table dmac {
         actions = {
             forward;
@@ -119,32 +138,15 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         size = 512;
     }
 
-    // Note to self that this is not standard pracis and should be done using tabels insted.
     apply {
-        // If the packet is of type 8100 then it is a tagged packet
         if (hdr.vlan.isValid()) {
-            if (standard_metadata.ingress_port == 1 || standard_metadata.ingress_port == 2) {
-                // If packet does not have its vlan tag set to 10: drop
-                if (hdr.vlan.vid != 10) {
-                    drop();
-                    exit;
-                } 
-                // Else we need to invalidate/remove the vlan header
-                else {
-                    hdr.vlan.setInvalid();
-                }
-            }
-        }
-        else {
-            // Apply nativ vlan for port 1 and 2
-            if (standard_metadata.ingress_port == 1 || standard_metadata.ingress_port == 2) {
-                hdr.vlan.vid = 10;
-            }
+            allowdVlan.apply();
         }
         smac.apply();
         dmac.apply();
     }
 }
+
 
 /*************************************************************************
 **************** E G R E S S P R O C E S S I N G ********************

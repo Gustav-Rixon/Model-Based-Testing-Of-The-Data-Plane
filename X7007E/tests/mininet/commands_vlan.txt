@@ -1,0 +1,1 @@
+table_add allowdVlan allowd 1 10 =>
