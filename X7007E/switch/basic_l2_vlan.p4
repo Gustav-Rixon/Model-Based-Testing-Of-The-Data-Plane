@@ -1,6 +1,11 @@
 #include <core.p4>
 #include <v1model.p4>
 
+
+/*************************************************************************
+*********************** H E A D E R S ***********************************
+*************************************************************************/
+
 const bit<16> ETHERTYPE_TPID = 0x8100;
 
 header ethernet_t {
@@ -23,6 +28,9 @@ struct headers {
 
 struct metadata {}
 
+/*************************************************************************
+*********************** P A R S E R ***********************************
+*************************************************************************/
 
 parser ParserImpl(packet_in pkt, out headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
 
@@ -45,10 +53,19 @@ parser ParserImpl(packet_in pkt, out headers hdr, inout metadata meta, inout sta
         }
 }
 
-control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
+/*************************************************************************
+************ C H E C K S U M V E R I F I C A T I O N *************
+*************************************************************************/
+
+control verifyChecksum(inout headers hdr, inout metadata meta) {
     apply {
     }
 }
+
+
+/*************************************************************************
+************** I N G R E S S P R O C E S S I N G *******************
+*************************************************************************/
 
 struct mac_learn_digest {
     bit<48> srcAddr;
@@ -129,21 +146,38 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     }
 }
 
+/*************************************************************************
+**************** E G R E S S P R O C E S S I N G ********************
+*************************************************************************/
+
+control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
+    apply {
+    }
+}
+
+/*************************************************************************
+************* C H E C K S U M C O M P U T A T I O N ***************
+*************************************************************************/
+
+control computeChecksum(inout headers hdr, inout metadata meta) {
+    apply {
+    }
+}
+
+
+/*************************************************************************
+*********************** D E P A R S E R *******************************
+*************************************************************************/
+
 control DeparserImpl(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
     }
 }
 
-control verifyChecksum(inout headers hdr, inout metadata meta) {
-    apply {
-    }
-}
-
-control computeChecksum(inout headers hdr, inout metadata meta) {
-    apply {
-    }
-}
+/*************************************************************************
+*********************** S W I T C H *******************************
+*************************************************************************/
 
 V1Switch
 (   ParserImpl(), 
