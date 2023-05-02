@@ -27,7 +27,6 @@ struct headers {
 }
 
 struct metadata {
-    bit<32> egress_port;
     bit<1> is_trunk;
 }
 
@@ -99,13 +98,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     action allowd() {
     }
 
-    action tagPkt(bit<12> native_vlan_id) {
-        hdr.vlan.ether_type = 0x8100;
-        hdr.vlan.vid = native_vlan_id;
-        hdr.vlan.cfi = 0;
-        hdr.vlan.pcp = 001;
-    }
-
     table allowdVlan { // Contains what vlan tag is allowd on what port 
         key = {
             standard_metadata.ingress_port: exact;
@@ -117,20 +109,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
             drop;
         }
         default_action = drop();
-        size = 1024;
-    }
-
-    table applyNativeVlan {
-            key = {
-            standard_metadata.ingress_port: exact;
-            //AND
-            hdr.vlan.vid: exact;
-        }
-        actions = {
-            tagPkt;
-            _nop;
-        }
-        default_action = _nop(); //Will not apply VLAN if not configured to
         size = 1024;
     }
 
@@ -162,9 +140,9 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     }
 
     apply {
-        applyNativeVlan.apply();
         if (hdr.vlan.isValid()) {
             allowdVlan.apply();
+            hdr.vlan.setInvalid();
         }
         smac.apply();
         dmac.apply();
@@ -183,7 +161,7 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
 
     table trunk_mode_table {
             key = {
-            meta.egress_port: exact;
+            standard_metadata.ingress_port: exact;
         }
         actions = {
             set_trunk_mode;
@@ -192,10 +170,32 @@ control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t
         size = 1024;
     }
 
+    action _nop() {
+    }
+
+    action tagPkt(bit<12> native_vlan_id) {
+        hdr.vlan.ether_type = 0x8100;
+        hdr.vlan.vid = native_vlan_id;
+        hdr.vlan.cfi = 0;
+        hdr.vlan.pcp = 001;
+    }
+
+    table applyNativeVlan {
+            key = {
+            standard_metadata.ingress_port: exact;
+        }
+        actions = {
+            tagPkt;
+            _nop;
+        }
+        default_action = _nop(); //Will not apply VLAN if not configured to
+        size = 1024;
+    }
+
     apply {
         trunk_mode_table.apply();
         if (meta.is_trunk == 1) {
-            hdr.vlan.setInvalid();
+            applyNativeVlan.apply();
         }
     }
 }
