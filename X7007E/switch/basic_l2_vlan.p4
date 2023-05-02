@@ -27,7 +27,8 @@ struct headers {
 }
 
 struct metadata {
-
+    bit<32> egress_port;
+    bit<1> is_trunk;
 }
 
 /*************************************************************************
@@ -153,7 +154,8 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
             drop;
         }
         key = {
-            hdr.ethernet.srcAddr: exact;
+            hdr.ethernet.srcAddr: 
+            exact;
         }
         default_action = mac_learn();
         size = 512;
@@ -175,9 +177,25 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 *************************************************************************/
 
 control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
+    action set_trunk_mode(bit<1> trunk_mode) {
+        meta.is_trunk = trunk_mode;
+    }
+
+    table trunk_mode_table {
+            key = {
+            meta.egress_port: exact;
+        }
+        actions = {
+            set_trunk_mode;
+        }
+        default_action = set_trunk_mode(0); //Will not apply VLAN if not configured to
+        size = 1024;
+    }
+
     apply {
-        if (hdr.vlan.isValid()){
-            hdr.vlan.setInvalid(); //If the outbount pkt is a taggd pkt the tag should be removed 
+        trunk_mode_table.apply();
+        if (meta.is_trunk == 1) {
+            hdr.vlan.setInvalid();
         }
     }
 }
