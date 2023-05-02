@@ -1,1 +1,14 @@
 table_add allowdVlan allowd 1 10 =>
+table_add allowdVlan allowd 2 10 =>
+table_add allowdVlan allowd 3 20 =>
+table_add allowdVlan allowd 4 20 =>
+
+table_add trunk_mode_table set_trunk_mode 1 => 0
+table_add trunk_mode_table set_trunk_mode 2 => 1
+table_add trunk_mode_table set_trunk_mode 3 => 0
+table_add trunk_mode_table set_trunk_mode 4 => 1
+
+table_add applyNativeVlan tagPkt 1 => 10
+table_add applyNativeVlan tagPkt 2 => 10
+table_add applyNativeVlan tagPkt 3 => 20
+table_add applyNativeVlan tagPkt 4 => 20
