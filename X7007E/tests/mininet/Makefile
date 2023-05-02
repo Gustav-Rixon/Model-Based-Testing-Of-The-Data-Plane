@@ -5,6 +5,9 @@ startMininet:
 popTable:
 	simple_switch_CLI --thrift-port 9090 < commands_l2.txt
 
+confVlan:
+	simple_switch_CLI --thrift-port 9090 < commands_vlan.txt
+
 #######Client stuff###########
 startRPC:
 #	LOCAL_IP=$$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $$2}');
