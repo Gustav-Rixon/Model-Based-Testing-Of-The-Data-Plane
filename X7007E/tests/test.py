@@ -9,6 +9,8 @@ import Pyro5.api
 import pynng
 import logging
 
+import concurrent.futures
+
 logger = logging.getLogger('my_logger')
 logger.setLevel(logging.INFO)
 handler = logging.FileHandler('my_log_file.log')
@@ -27,7 +29,8 @@ class RixonsVlanss(unittest.TestCase):
     dstT = ""
     pktType = ""
     vlanTag = ""
-    typeOfPort = ""
+    typeOfPortSrc = ""
+    typeOfPortDst = ""
     nativVlanTagOnSwPort = ""
     expectedOutCome = False
 
@@ -38,8 +41,7 @@ class RixonsVlanss(unittest.TestCase):
     # This function should send the packet and assert it to the expected outcome
 
     def v23(self):
-        # global src, dstT, expectedOutCome, pktType, vlanTag
-        global src, dstT, expectedOutCome, pktType
+        global src, dstT, expectedOutCome, pktType, vlanTag, typeOfPortSrc, typeOfPortDst
 
         dstIPA = GetInfo(dstT, "ip")
         srcIPA = GetInfo(src, "ip")
@@ -47,42 +49,54 @@ class RixonsVlanss(unittest.TestCase):
         dstMACA = GetInfo(dstT, "mac")
         srcMACA = GetInfo(src, "mac")
 
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
         # dstIPA = "10.0.0.10"
         # srcIPA = "10.0.1.10"
         # dstMACA = "00:00:00:00:00:00:01"
         # srcMACA = "00:00:00:00:00:00:02"
 
-        data = {
-            "dstIP": dstIPA,
-            "dstMAC": dstMACA,
-            "srcMAC": srcMACA,
-            "vlanTag": vlanTag
-        }
+        if vlanTag not in globals():
+            data = {
+                "dstIP": dstIPA,
+                "dstMAC": dstMACA,
+                "srcMAC": srcMACA,
+                "vlanTag": vlanTag
+            }
+        else:
+            data = {
+                "dstIP": dstIPA,
+                "dstMAC": dstMACA,
+                "srcMAC": srcMACA,
+                "vlanTag": None
+            }
 
         data = json.dumps(data)
 
-        t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 1))
+        t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 3))
         # tt = threading.Thread(target=Sub, args=(dstIPA, 5))
-        tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
-        # t.start()
+        # tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
+        t.start()
         # tt.start()
         # time.sleep(1)  # RACE CONDITION ahhhhhhhhhhhhhhhhhhhhhh
         # s = Test()  # send multiple pkt to ensure delivery
         # time.sleep(2)  # sleep as to not overload the tinyRPC server ;)
-        # SendPkt(srcIPA, data)
-        # SendPkt(srcIPA, data)
-        # SendPkt(srcIPA, data)
-        # SendPkt(srcIPA, data)
-        aw = Sub(dstIPA, 0)
+
+        aw = Sub(dstIPA, 2, srcIPA, data)
+
+        # aw = Sub(dstIPA, 3)
         # tt.join()
-        # t.join()
-        # aw = ""
+        t.join()
+
+        # aw = Test(srcIPA)
+        # aw = ''
         logger.info("---SIMDATA---")
         logger.info("dst address %s", dstIPA)
         logger.info("src address %s", srcIPA)
         logger.info("dst mac %s", dstMACA)
         logger.info("src mac %s", srcMACA)
-        logger.info("pktType %s", pktType)
+        logger.info("src port %s, dst port %s", typeOfPortSrc, typeOfPortDst)
+        logger.info("pktType %s, vlantag %s", pktType, vlanTag)
 
         try:
             self.assertEqual(expectedOutCome, aw)
@@ -131,53 +145,51 @@ class RixonsVlanss(unittest.TestCase):
     def e_R_correctVlanTag(self):
         pass
 
-    def e16(self):
-        pass
-
     def e_R_sameAsNativVlan(self):
         pass
 
-    def e14(self):
-        pass
-
     def e_R_h4AsSource(self):
-        global src, typeOfPort, nativVlanTagOnSwPort
+        global src, typeOfPortSrc, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 20
-        typeOfPort = "tagged"
+        typeOfPortSrc = "tagged"
         src = "h4"
 
     def e_R_h3AsSource(self):
-        global src, typeOfPort, nativVlanTagOnSwPort
+        global src, typeOfPortSrc, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 20
-        typeOfPort = "untagged"
+        typeOfPortSrc = "untagged"
         src = "h3"
 
     def e_R_h2AsSource(self):
-        global src, typeOfPort, nativVlanTagOnSwPort
+        global src, typeOfPortSrc, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 10
-        typeOfPort = "tagged"
+        typeOfPortSrc = "tagged"
         src = "h2"
 
     def e_R_h1AsSource(self):
-        global src, typeOfPort, nativVlanTagOnSwPort
+        global src, typeOfPortSrc, nativVlanTagOnSwPort
         nativVlanTagOnSwPort = 10
-        typeOfPort = "untagged"
+        typeOfPortSrc = "untagged"
         src = "h1"
 
     def e_R_h4AsDst(self):
-        global dstT
+        global dstT, typeOfPortDst
+        typeOfPortDst = "tagged"
         dstT = "h4"
 
     def e_R_h3AsDst(self):
-        global dstT
+        global dstT, typeOfPortDst
+        typeOfPortDst = "untagged"
         dstT = "h3"
 
     def e_R_h2AsDst(self):
-        global dstT
+        global dstT, typeOfPortDst
+        typeOfPortDst = "tagged"
         dstT = "h2"
 
     def e_R_h1AsDst(self):
-        global dstT
+        global dstT, typeOfPortDst
+        typeOfPortDst = "untagged"
         dstT = "h1"
 
     def e_R_tagged(self):
@@ -216,28 +228,13 @@ class RixonsVlanss(unittest.TestCase):
         global vlanTag, src
         vlanTag = GetInfo(src, "correctVlanTag")
 
-    def e16(self):
-        pass
-
-    def e14(self):
-        pass
-
-    def e7(self):
-        pass
-
     def v_pkt_type(self):
-        pass
-
-    def e44(self):
         pass
 
     def e_init(self):
         pass
 
     def e_untaggedPKT(self):
-        pass
-
-    def e30(self):
         pass
 
     def e_notSameAsNativeVlan(self):
@@ -261,25 +258,16 @@ class RixonsVlanss(unittest.TestCase):
     def v_init(self):
         print("-----NEWTEST-----")
 
-    def e42(self):
-        pass
-
     def v_taggedOrUntaggedPacket(self):
         pass
 
     def v_tagged_or_untagged(self):
         pass
 
-    def e48(self):
-        pass
-
     def e_broadcastPKT(self):
         pass
 
     def e_yes(self):
-        pass
-
-    def e43(self):
         pass
 
     def v_typeOfPacket(self):
@@ -289,9 +277,6 @@ class RixonsVlanss(unittest.TestCase):
         pass
 
     def v_addNativeVlanTag(self):
-        pass
-
-    def e46(self):
         pass
 
     def v_vlanConf(self):
@@ -309,19 +294,10 @@ class RixonsVlanss(unittest.TestCase):
     def e_sameAsNativeVlan(self):
         pass
 
-    def e_no(self):
-        pass
-
-    def e31(self):
-        pass
-
-    def e6(self):
-        pass
-
     def e_taggedPKT(self):
         pass
 
-    def e19(self):
+    def e_no(self):
         pass
 
 # ----helper functions-----#
@@ -338,6 +314,7 @@ def GetInfo(hostname, info):
         print(hostname + " Host doesn't exist")
         f.close()
     pass
+
 
 def random_vlan(excluded_vlan_str=None):
     excluded_vlan = int(excluded_vlan_str) if excluded_vlan_str else None
@@ -363,9 +340,9 @@ def StartPub(hostIP, pattern, timeout):
     greeting_maker.pub(pattern, timeout)
 
 
-def Test():
+def Test(hostIP):
     greeting_maker = Pyro5.api.Proxy(
-        "PYRONAME:example.greeting@10.0.0.10:9090")
+        "PYRONAME:example.greeting@%s:9090" % hostIP)
     res = greeting_maker.get_fortune()
     return res
 
@@ -376,16 +353,19 @@ def SendPkt(hostIP, data):
     greeting_maker.sendPkt(data)
 
 
-def Sub(target, max_timeouts):
+def Sub(target, max_timeouts, srcIPA, data):
     address = f'tcp://{target}:65432'
     timeouts = 0
-
     try:
         with pynng.Sub0(dial=address, recv_timeout=1) as socket:
             socket.subscribe(b'')
 
             while timeouts <= max_timeouts:
                 try:
+                    SendPkt(srcIPA, data)
+                    SendPkt(srcIPA, data)
+                    SendPkt(srcIPA, data)
+                    SendPkt(srcIPA, data)
                     if socket.recv().decode() == 'True':
                         return True
                 except pynng.Timeout:
