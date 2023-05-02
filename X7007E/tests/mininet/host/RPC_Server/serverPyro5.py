@@ -86,7 +86,7 @@ class GreetingMaker(object):
     def sendPkt(self, data):
         data = json.loads(data)
         pkt = CreateMsg(dstIP=data["dstIP"], srcMAC=data["srcMAC"],
-                        dstMAC=data["dstMAC"], payload="tjaa", vlan=10)
+                        dstMAC=data["dstMAC"], payload="tjaa", vlan=data["vlanTag"])
         sendp(pkt)
 
     def pub(self, pattern, pup):

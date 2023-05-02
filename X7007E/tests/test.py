@@ -1,4 +1,5 @@
 
+import random
 import unittest
 import json
 from scapy.all import *
@@ -54,7 +55,8 @@ class RixonsVlanss(unittest.TestCase):
         data = {
             "dstIP": dstIPA,
             "dstMAC": dstMACA,
-            "srcMAC": srcMACA
+            "srcMAC": srcMACA,
+            "vlanTag": vlanTag
         }
 
         data = json.dumps(data)
@@ -140,19 +142,19 @@ class RixonsVlanss(unittest.TestCase):
 
     def e_R_h4AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
-        nativVlanTagOnSwPort = 40
+        nativVlanTagOnSwPort = 20
         typeOfPort = "tagged"
         src = "h4"
 
     def e_R_h3AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
-        nativVlanTagOnSwPort = 30
+        nativVlanTagOnSwPort = 20
         typeOfPort = "untagged"
         src = "h3"
 
     def e_R_h2AsSource(self):
         global src, typeOfPort, nativVlanTagOnSwPort
-        nativVlanTagOnSwPort = 20
+        nativVlanTagOnSwPort = 10
         typeOfPort = "tagged"
         src = "h2"
 
@@ -199,20 +201,20 @@ class RixonsVlanss(unittest.TestCase):
         pktType = "broadcast_untagged"
 
     def e_R_noVlanTag(self):
-        global vlanTag
-        vlanTag = ""
+        pass
 
     def e_R_incorrectVlanTag(self):
-        global vlanTag
-        vlanTag = "incorrect"
+        global vlanTag, src
+        vlanTag = GetInfo(src, "correctVlanTag")
+        vlanTag = random_vlan(vlanTag)
 
     def e_R_sameAsNativVlan(self):
-        global vlanTag
-        vlanTag = "sameAsNativVlan"
+        global vlanTag, src
+        vlanTag = GetInfo(src, "nativVlanTag")
 
     def e_R_correctVlanTag(self):
-        global vlanTag
-        vlanTag = "correct"
+        global vlanTag, src
+        vlanTag = GetInfo(src, "correctVlanTag")
 
     def e16(self):
         pass
@@ -336,6 +338,13 @@ def GetInfo(hostname, info):
         print(hostname + " Host doesn't exist")
         f.close()
     pass
+
+def random_vlan(excluded_vlan_str=None):
+    excluded_vlan = int(excluded_vlan_str) if excluded_vlan_str else None
+    vlan = random.randint(1, 4094)
+    while vlan == excluded_vlan:
+        vlan = random.randint(1, 4094)
+    return str(vlan)
 
 
 # def StartPub(hostIP, pattern, timeout):

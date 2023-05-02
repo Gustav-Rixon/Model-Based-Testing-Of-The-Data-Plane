@@ -360,8 +360,8 @@
 					"actions": [
 						"global.src = \"h2\";",
 						"global.typeOfPort = \"tagged\";",
-						"global.portVlan = 20;",
-						"global.allowdVlans = [20];",
+						"global.portVlan = 10;",
+						"global.allowdVlans = [10];",
 						"global.nativVlanTagOnSwPort = 10;"
 					]
 				},
@@ -373,9 +373,9 @@
 					"actions": [
 						"global.src = \"h3\";",
 						"global.typeOfPort = \"untagged\";",
-						"global.portVlan = 30;",
-						"global.allowdVlans = [30];",
-						"global.nativVlanTagOnSwPort = 10;"
+						"global.portVlan = 20;",
+						"global.allowdVlans = [20];",
+						"global.nativVlanTagOnSwPort = 20;"
 					]
 				},
 				{
@@ -386,9 +386,9 @@
 					"actions": [
 						"global.src = \"h4\";",
 						"global.typeOfPort = \"tagged\";",
-						"global.portVlan = 40;",
-						"global.allowdVlans = [40];",
-						"global.nativVlanTagOnSwPort = 10;"
+						"global.portVlan = 20;",
+						"global.allowdVlans = [20];",
+						"global.nativVlanTagOnSwPort = 20;"
 					]
 				},
 				{
