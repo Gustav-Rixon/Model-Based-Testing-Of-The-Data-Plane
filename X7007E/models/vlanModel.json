@@ -148,6 +148,27 @@
 				{
 					"id": "v8",
 					"name": "v_choose_dst"
+				},
+				{
+					"id": "v9",
+					"name": "v_allowd",
+					"properties": {
+						"description": "Check if tag is allowed to be received by dst"
+					}
+				},
+				{
+					"id": "v10",
+					"name": "v_drop",
+					"properties": {
+						"color": "#e01b24"
+					}
+				},
+				{
+					"id": "v11",
+					"name": "v_drop",
+					"properties": {
+						"color": "#e01b24"
+					}
 				}
 			],
 			"edges": [
@@ -157,7 +178,9 @@
 					"sourceVertexId": "v24",
 					"targetVertexId": "v26",
 					"guard": "global.packet == \"tagged\";",
-					"actions": [],
+					"actions": [
+						"(global.allowdVlansDST.includes(global.portVlan) == true) ? global.tagSameAsPort = \"yes\" : global.tagSameAsPort = \"no\";"
+					],
 					"properties": {}
 				},
 				{
@@ -168,7 +191,10 @@
 					"guard": "global.packet == \"untagged\";",
 					"properties": {
 						"description": "addNativVlanTag"
-					}
+					},
+					"actions": [
+						"global.sameAsNativeVlan = true;"
+					]
 				},
 				{
 					"id": "e25",
@@ -227,21 +253,22 @@
 					"name": "e_yes",
 					"sourceVertexId": "v36",
 					"targetVertexId": "v29",
-					"guard": "global.vlanTag == \"correct\""
+					"guard": "global.vlanTag == \"correct\" && global.tagSameAsPort == \"yes\""
 				},
 				{
 					"id": "e35",
 					"name": "e_no",
 					"sourceVertexId": "v36",
 					"targetVertexId": "v37",
-					"guard": "global.vlanTag != \"correct\""
+					"guard": "global.vlanTag != \"correct\" || global.tagSameAsPort == \"no\""
 				},
 				{
 					"id": "e29",
 					"name": "e_sameAsNativeVlan",
 					"sourceVertexId": "v26",
-					"targetVertexId": "v38",
-					"guard": "global.sameAsNativeVlan == true"
+					"targetVertexId": "v9",
+					"guard": "global.sameAsNativeVlan == true",
+					"actions": []
 				},
 				{
 					"id": "e36",
@@ -289,35 +316,36 @@
 					"id": "e21",
 					"name": "e_sameAsNativeVlan",
 					"sourceVertexId": "v27",
-					"targetVertexId": "v5"
+					"targetVertexId": "v5",
+					"guard": "global.sameAsNativeVlan == true"
 				},
 				{
 					"id": "e30",
-					"name": "e30",
+					"name": "e45",
 					"sourceVertexId": "v31",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e31",
-					"name": "e31",
+					"name": "e45",
 					"sourceVertexId": "v30",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e42",
-					"name": "e42",
+					"name": "e45",
 					"sourceVertexId": "v41",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e43",
-					"name": "e43",
+					"name": "e45",
 					"sourceVertexId": "v44",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e44",
-					"name": "e44",
+					"name": "e45",
 					"sourceVertexId": "v43",
 					"targetVertexId": "v23"
 				},
@@ -329,13 +357,13 @@
 				},
 				{
 					"id": "e46",
-					"name": "e46",
+					"name": "e45",
 					"sourceVertexId": "v37",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e48",
-					"name": "e48",
+					"name": "e45",
 					"sourceVertexId": "v38",
 					"targetVertexId": "v23"
 				},
@@ -484,13 +512,13 @@
 				},
 				{
 					"id": "e7",
-					"name": "e7",
+					"name": "e45",
 					"sourceVertexId": "v3",
 					"targetVertexId": "v23"
 				},
 				{
 					"id": "e14",
-					"name": "e14",
+					"name": "e45",
 					"sourceVertexId": "v5",
 					"targetVertexId": "v23"
 				},
@@ -499,32 +527,77 @@
 					"name": "e_R_h1AsDst",
 					"sourceVertexId": "v8",
 					"targetVertexId": "v1",
-					"guard": "global.src != \"h1\";"
+					"guard": "global.src != \"h1\";",
+					"actions": [
+						"global.allowdVlansDST = [10];"
+					]
 				},
 				{
 					"id": "e16",
 					"name": "e_R_h2AsDst",
 					"sourceVertexId": "v8",
 					"targetVertexId": "v1",
-					"guard": "global.src != \"h2\";"
+					"guard": "global.src != \"h2\";",
+					"actions": [
+						"global.allowdVlansDST = [10];"
+					]
 				},
 				{
 					"id": "e17",
 					"name": "e_R_h3AsDst",
 					"sourceVertexId": "v8",
 					"targetVertexId": "v1",
-					"guard": "global.src != \"h3\";"
+					"guard": "global.src != \"h3\";",
+					"actions": [
+						"global.allowdVlansDST = [20];"
+					]
 				},
 				{
 					"id": "e18",
 					"name": "e_R_h4AsDst",
 					"sourceVertexId": "v8",
 					"targetVertexId": "v1",
-					"guard": "global.src != \"h4\";"
+					"guard": "global.src != \"h4\";",
+					"actions": [
+						"global.allowdVlansDST = [20];"
+					]
 				},
 				{
 					"id": "e19",
-					"name": "e19",
+					"name": "e_yes",
+					"sourceVertexId": "v9",
+					"targetVertexId": "v38",
+					"guard": "global.tagSameAsPort == \"yes\""
+				},
+				{
+					"id": "e20",
+					"name": "e_no",
+					"sourceVertexId": "v9",
+					"targetVertexId": "v10",
+					"guard": "global.tagSameAsPort == \"no\""
+				},
+				{
+					"id": "e47",
+					"name": "e45",
+					"sourceVertexId": "v10",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e49",
+					"name": "e_no",
+					"sourceVertexId": "v27",
+					"targetVertexId": "v11",
+					"guard": "global.sameAsNativeVlan == false"
+				},
+				{
+					"id": "e50",
+					"name": "e45",
+					"sourceVertexId": "v11",
+					"targetVertexId": "v23"
+				},
+				{
+					"id": "e51",
+					"name": "e45",
 					"sourceVertexId": "v23",
 					"targetVertexId": "v7"
 				}
