@@ -107,6 +107,7 @@ def main():
         if mode == "l2":
             h.setDefaultRoute("dev eth0")
             h.cmd("make startRPC")
+            # h.cmd("make startPub")
         else:
             h.setARP(sw_addr[n], sw_mac[n])
             h.setDefaultRoute("dev eth0 via %s" % sw_addr[n])
