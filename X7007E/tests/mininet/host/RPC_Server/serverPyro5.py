@@ -78,6 +78,12 @@ def CreateMsg(dstIP, srcMAC, dstMAC, payload,  vlan=None):
     return pkt
 
 
+def get_computer_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
+
+
 @Pyro5.api.expose
 class GreetingMaker(object):
     def get_fortune(self):
@@ -86,7 +92,7 @@ class GreetingMaker(object):
     def sendPkt(self, data):
         data = json.loads(data)
         pkt = CreateMsg(dstIP=data["dstIP"], srcMAC=data["srcMAC"],
-                        dstMAC=data["dstMAC"], payload="tjaa", vlan=data["vlanTag"])
+                        dstMAC=data["dstMAC"], payload="tjaa", vlan=int(data["vlanTag"]))
         sendp(pkt)
 
     def pub(self, pattern, pup):
@@ -103,7 +109,7 @@ ip_address = s.getsockname()[0]
 s.close()
 
 daemon = Pyro5.server.Daemon(host=ip_address)         # make a Pyro daemon
-ns = Pyro5.api.locate_ns("0.0.0.0")             # find the name server
+ns = Pyro5.api.locate_ns(get_computer_ip())             # find the name server
 # register the greeting maker as a Pyro object
 uri = daemon.register(GreetingMaker)
 # register the object with a name in the name server
