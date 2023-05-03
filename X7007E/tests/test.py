@@ -49,8 +49,6 @@ class RixonsVlanss(unittest.TestCase):
         dstMACA = GetInfo(dstT, "mac")
         srcMACA = GetInfo(src, "mac")
 
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-
         # dstIPA = "10.0.0.10"
         # srcIPA = "10.0.1.10"
         # dstMACA = "00:00:00:00:00:00:01"
@@ -68,25 +66,26 @@ class RixonsVlanss(unittest.TestCase):
                 "dstIP": dstIPA,
                 "dstMAC": dstMACA,
                 "srcMAC": srcMACA,
-                "vlanTag": None
+                "vlanTag": "0"
             }
 
         data = json.dumps(data)
 
-        t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 3))
+        # t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 3))
         # tt = threading.Thread(target=Sub, args=(dstIPA, 5))
         # tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
-        t.start()
+        # t.start()
         # tt.start()
         # time.sleep(1)  # RACE CONDITION ahhhhhhhhhhhhhhhhhhhhhh
         # s = Test()  # send multiple pkt to ensure delivery
         # time.sleep(2)  # sleep as to not overload the tinyRPC server ;)
 
         aw = Sub(dstIPA, 2, srcIPA, data)
+        # aw = Test(dstIPA)
 
         # aw = Sub(dstIPA, 3)
         # tt.join()
-        t.join()
+        # t.join()
 
         # aw = Test(srcIPA)
         # aw = ''
@@ -324,17 +323,7 @@ def random_vlan(excluded_vlan_str=None):
     return str(vlan)
 
 
-# def StartPub(hostIP, pattern, timeout):
-#     rpc_client = RPCClient(
-#         JSONRPCProtocol(),
-#         HttpPostClientTransport('http://%s' % hostIP)
-#     )
-
-#     str_server = rpc_client.get_proxy()
-
-#     str_server.pub(pattern, timeout)
-
-def StartPub(hostIP, pattern, timeout):
+def StartPub(hostIP, pattern, timeout):  # Currently not used because of problem
     greeting_maker = Pyro5.api.Proxy(
         "PYRONAME:example.greeting@%s:9090" % hostIP)
     greeting_maker.pub(pattern, timeout)
@@ -362,10 +351,9 @@ def Sub(target, max_timeouts, srcIPA, data):
 
             while timeouts <= max_timeouts:
                 try:
-                    SendPkt(srcIPA, data)
-                    SendPkt(srcIPA, data)
-                    SendPkt(srcIPA, data)
-                    SendPkt(srcIPA, data)
+                    # SendPkt(srcIPA, data)
+                    tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
+                    tt.start()
                     if socket.recv().decode() == 'True':
                         return True
                 except pynng.Timeout:
