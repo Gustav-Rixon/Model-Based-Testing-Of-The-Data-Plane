@@ -195,26 +195,53 @@ broadcasting packets if necessary, and handling packet drops. It defines multipl
 */
 
 control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
+
+    /*
+    This action is used to set the egress port for the packet. 
+    It takes a 9-bit port number as an input and assigns it to the standard_metadata.egress_spec field.
+    */
     action forward(bit<9> port) {
         standard_metadata.egress_spec = port;
     }
 
+    /*
+    This action is used to broadcast the packet to all ports by setting the multicast group ID to 1. 
+    The multicast group ID is assigned to the standard_metadata.mcast_grp field.
+    */
     action bcast() {
         standard_metadata.mcast_grp = 1;
     }
 
+    /*
+    This action is used to learn the source MAC address and the ingress port of the packet. 
+    It generates a digest message with the source MAC address and the ingress port, 
+    which can be processed by the control plane to update the MAC address table.
+    */
     action mac_learn() {
         digest<mac_learn_digest>((bit<32>)1024, { hdr.ethernet.srcAddr, standard_metadata.ingress_port });
     }
 
+    /*
+    This action marks the packet for dropping and exits the processing pipeline. 
+    It sets the standard_metadata.drop field using the mark_to_drop() method.
+    */
     action drop() {
         mark_to_drop( standard_metadata );
         exit;
     }
 
+    /*
+    This action is a no-operation action, meaning it does not perform any operation.
+    */
     action _nop() {
     }
 
+    /*
+    This table is responsible for forwarding packets based on the destination MAC address. 
+    It has three possible actions: forward, bcast, and drop. 
+    The table has an exact match key based on the destination MAC address. 
+    The default action for this table is to broadcast the packet.
+    */
     table dmac {
         actions = {
             forward;
@@ -228,6 +255,12 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         size = 512;
     }
 
+    /*
+    This table is responsible for learning the source MAC address of the packet. 
+    It has three possible actions: mac_learn, _nop, and drop. 
+    The table has an exact match key based on the source MAC address. 
+    The default action for this table is to learn the source MAC address.
+    */
     table smac {
         actions = {
             mac_learn;
