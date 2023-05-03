@@ -4,9 +4,18 @@ import select
 import pynng
 import threading
 
+import socket
 
-def find_pattern(pattern, timeout):
-    address = 'tcp://0.0.0.0:65432'  # listen on all available interfaces
+
+def get_computer_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
+
+
+def find_pattern(pattern):
+    # listen on all available interfaces
+    address = 'tcp://%s:65432' % get_computer_ip()
     with pynng.Pub0(listen=address) as socket:
         while True:
             # Set up the tcpdump command with appropriate flags
@@ -21,26 +30,6 @@ def find_pattern(pattern, timeout):
 
             # Initialize the pattern found flag to False
             pattern_found = False
-
-            # Define a function to check the timeout and terminate tcpdump if necessary
-            def check_timeout():
-                nonlocal pattern_found
-                nonlocal tcpdump_process
-                nonlocal socket
-
-                # Wait for the specified timeout
-                timeout_event.wait(timeout)
-
-                # If the pattern hasn't been found, terminate tcpdump and publish the False message
-                if not pattern_found:
-                    tcpdump_process.terminate()
-                    msg = "False".encode()
-                    socket.send(msg)
-
-            # Start a thread to check for the timeout
-            timeout_event = threading.Event()
-            timeout_thread = threading.Thread(target=check_timeout)
-            timeout_thread.start()
 
             # Iterate over the lines of tcpdump's output
             while True:
@@ -73,9 +62,6 @@ def find_pattern(pattern, timeout):
                     tcpdump_process.terminate()
                     break
 
-            # Signal the timeout thread to stop waiting
-            timeout_event.set()
-
             # Return the appropriate value based on whether the pattern was found or not
             if pattern_found:
                 msg = "True".encode()
@@ -85,5 +71,4 @@ def find_pattern(pattern, timeout):
                 socket.send(msg)
 
 
-# If no msg found in 10 sek restart
-find_pattern("tjaa", 10)
+find_pattern("tjaa")
