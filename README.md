@@ -24,7 +24,7 @@ This will populate the tables in the bmw2 switch.
 ### AltWalker
 From the tests directory run:
 ```
-runRand time=100
+make runRand time=100
 ```
 This will run AltWalker for 100 secounds.
 
