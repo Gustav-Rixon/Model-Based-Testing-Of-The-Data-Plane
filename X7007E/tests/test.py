@@ -3,13 +3,9 @@ import random
 import unittest
 import json
 from scapy.all import *
-
 import Pyro5.api
-
 import pynng
 import logging
-
-import concurrent.futures
 
 logger = logging.getLogger('my_logger')
 logger.setLevel(logging.INFO)
@@ -20,11 +16,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-# logger = logging.basicConfig(filename='test.log', level=logging.INFO,
-#                             format='%(asctime)s %(levelname)s:%(message)s')
-
 class RixonsVlanss(unittest.TestCase):
-    # Implemented
     srcT = ""
     dstT = ""
     pktType = ""
@@ -34,12 +26,6 @@ class RixonsVlanss(unittest.TestCase):
     nativVlanTagOnSwPort = ""
     expectedOutCome = False
 
-    # Not Implemented
-
-    # Here is where a assert should check if expected outcome equels the simulated outcome
-
-    # This function should send the packet and assert it to the expected outcome
-
     def v23(self):
         global src, dstT, expectedOutCome, pktType, vlanTag, typeOfPortSrc, typeOfPortDst
 
@@ -48,11 +34,6 @@ class RixonsVlanss(unittest.TestCase):
 
         dstMACA = GetInfo(dstT, "mac")
         srcMACA = GetInfo(src, "mac")
-
-        # dstIPA = "10.0.0.10"
-        # srcIPA = "10.0.1.10"
-        # dstMACA = "00:00:00:00:00:00:01"
-        # srcMACA = "00:00:00:00:00:00:02"
 
         if vlanTag not in globals():
             data = {
@@ -71,24 +52,8 @@ class RixonsVlanss(unittest.TestCase):
 
         data = json.dumps(data)
 
-        # t = threading.Thread(target=StartPub, args=(dstIPA, "tjaa", 3))
-        # tt = threading.Thread(target=Sub, args=(dstIPA, 5))
-        # tt = threading.Thread(target=SendPkt, args=(srcIPA, data))
-        # t.start()
-        # tt.start()
-        # time.sleep(1)  # RACE CONDITION ahhhhhhhhhhhhhhhhhhhhhh
-        # s = Test()  # send multiple pkt to ensure delivery
-        # time.sleep(2)  # sleep as to not overload the tinyRPC server ;)
-
         aw = Sub(dstIPA, 2, srcIPA, data)
-        # aw = Test(dstIPA)
 
-        # aw = Sub(dstIPA, 3)
-        # tt.join()
-        # t.join()
-
-        # aw = Test(srcIPA)
-        # aw = ''
         logger.info("---SIMDATA---")
         logger.info("dst address %s", dstIPA)
         logger.info("src address %s", srcIPA)
@@ -109,9 +74,6 @@ class RixonsVlanss(unittest.TestCase):
         global expectedOutCome
         expectedOutCome = False  # If the paket is dropt assume no response
 
-    # TODO
-    # This need to check more!
-    # Ex: expect multiple responses!
     def v_floodToAllPortsOnVlan(self):
         global expectedOutCome
         expectedOutCome = True
@@ -128,18 +90,11 @@ class RixonsVlanss(unittest.TestCase):
     def v_newPacket(self):
         pass
 
-    # TODO
-    # NEEDS What host is sending
-    # Cheks its own ip?
     def v_typeOfPort(self):
         pass
 
-        # Activate Guard
-
     def v_choose_dst(self):
         pass
-
-    # ACTIONS
 
     def e_R_correctVlanTag(self):
         pass
@@ -363,13 +318,3 @@ def Sub(target, max_timeouts, srcIPA, data):
         return (f"Connection error: {e}")
 
     return False
-
-
-def GetVlan(type):
-    pass
-
-
-def CreatePkt():
-    pass
-
-# TODO send the pkt lamo
